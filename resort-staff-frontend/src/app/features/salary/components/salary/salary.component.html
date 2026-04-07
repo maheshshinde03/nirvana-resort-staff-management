@@ -1,0 +1,153 @@
+<div class="container-fluid mt-4 px-3 px-md-4">
+  <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3 no-print">
+    <h4 class="mb-0">Salary Slip</h4>
+
+    <a routerLink="/salary">
+      <button type="button" class="btn btn-primary">Back</button>
+    </a>
+  </div>
+
+  <div *ngIf="errorMsg" class="alert alert-danger py-2 no-print">{{ errorMsg }}</div>
+
+  <div class="card mb-3 no-print">
+    <div class="card-body">
+      <form [formGroup]="form" class="row g-3 align-items-end">
+        <div class="col-12 col-md-3">
+          <label class="form-label">Staff ID</label>
+          <input type="text" class="form-control" value="{{ employeeId }}" disabled />
+        </div>
+
+        <div class="col-12 col-md-3">
+          <label class="form-label">Month</label>
+          <input type="text" class="form-control" formControlName="month" />
+        </div>
+
+        <div class="col-12 col-md-2">
+          <label class="form-label">Year</label>
+          <input type="number" class="form-control" formControlName="year" />
+        </div>
+
+        <div class="col-12 col-md-4 d-flex gap-2">
+          <button type="button" class="btn btn-primary" (click)="loadSalary()" [disabled]="loading">
+            {{ loading ? 'Loading...' : 'Load' }}
+          </button>
+          <button type="button" class="btn btn-outline-primary" (click)="saveAttendance()"
+            [disabled]="loading || !salaryData">
+            Save Attendance
+          </button>
+          <button type="button" class="btn btn-outline-success" (click)="toggleFinalize()" [disabled]="!salaryData">
+            {{ finalized ? 'Edit' : 'Finalize' }}
+          </button>
+          <button type="button" class="btn btn-dark" (click)="printSlip()" [disabled]="!salaryData">
+            Print
+          </button>
+        </div>
+
+        <div class="col-12">
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" formControlName="autoCalculate" id="autoCalculate" />
+            <label class="form-check-label" for="autoCalculate">Auto-calculate salary (30-day fixed)</label>
+          </div>
+        </div>
+
+        <div class="col-12 col-md-2">
+          <label class="form-label">Total Days</label>
+          <input type="number" class="form-control" formControlName="totalDays" />
+        </div>
+
+        <div class="col-12 col-md-2">
+          <label class="form-label">Present Days</label>
+          <input type="number" class="form-control" formControlName="present_days" />
+        </div>
+
+        <div class="col-12 col-md-2">
+          <label class="form-label">Leave Days</label>
+          <input type="number" class="form-control" formControlName="leaves" />
+        </div>
+
+        <div class="col-12 col-md-3">
+          <label class="form-label">Basic Salary</label>
+          <input type="number" class="form-control" formControlName="basicSalary" />
+        </div>
+
+        <div class="col-12 col-md-3">
+          <label class="form-label">Total Salary</label>
+          <input type="number" class="form-control" formControlName="totalSalary" />
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="salary-slip-sheet" *ngIf="salaryData">
+    <div class="salary-slip-header">
+      <img class="logo" [src]="logoPath" alt="Nirvana Resort logo" />
+      <div class="company">
+        <div class="company-name">{{ company.name }}</div>
+        <div class="company-line">{{ company.address }}</div>
+        <div class="company-line">{{ company.mobile }}</div>
+      </div>
+    </div>
+
+    <hr class="divider" />
+
+    <div class="slip-title">
+      Salary Slip - {{ form.get('month')?.value }} {{ form.get('year')?.value }}
+    </div>
+
+    <div class="section">
+      <div class="section-title">Staff Details</div>
+      <div class="grid">
+        <div><span class="k">Staff ID:</span> <span class="v">{{ employeeId }}</span></div>
+        <div><span class="k">Name:</span> <span class="v">{{ salaryData?.name }}</span></div>
+        <div><span class="k">Role:</span> <span class="v">{{ salaryData?.role }}</span></div>
+        <div><span class="k">Mobile:</span> <span class="v">{{ salaryData?.mobile }}</span></div>
+        <div><span class="k">Category:</span> <span class="v">{{ salaryData?.category | categoryLabel }}</span></div>
+      </div>
+    </div>
+
+    <div class="section mt-4">
+      <div class="section-title">Salary Breakdown</div>
+      <table class="table table-bordered table-sm slip-table mb-0">
+        <tbody>
+          <tr>
+            <th>Basic Salary</th>
+            <td>₹ {{ form.get('basicSalary')?.value | number:'1.0-2' }}</td>
+          </tr>
+          <tr>
+            <th>Total Days</th>
+            <td>{{ form.get('totalDays')?.value }}</td>
+          </tr>
+          <tr>
+            <th>Present Days</th>
+            <td>{{ form.get('present_days')?.value }}</td>
+          </tr>
+          <tr>
+            <th>Leave Days</th>
+            <td>{{ form.get('leaves')?.value }}</td>
+          </tr>
+          <tr>
+            <th>Deduction for Leaves</th>
+            <td>₹ {{ form.get('deduction')?.value | number:'1.0-2' }}</td>
+          </tr>
+          <tr>
+            <th>EPF</th>
+            <td>₹ 0</td>
+          </tr>
+          <tr>
+            <th>Professional Tax</th>
+            <td>₹ 0</td>
+          </tr>
+          <tr class="total-row">
+            <th>Total Salary</th>
+            <td>₹ {{ form.get('totalSalary')?.value | number:'1.0-2' }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="signature mt-4">
+      <div class="signature-line"></div>
+      <div class="signature-label">Manager</div>
+    </div>
+  </div>
+</div>

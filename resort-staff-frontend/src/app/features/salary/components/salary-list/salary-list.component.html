@@ -1,0 +1,126 @@
+<section class="page-shell">
+  <header class="page-hero">
+    <div class="min-width-0">
+      <div class="text-uppercase small muted" style="letter-spacing: 0.12em;">Records</div>
+      <h4>Salary List</h4>
+      <div class="hero-subtitle">Filter by staff, month, and year to view attendance and payroll.</div>
+    </div>
+    <div class="hero-actions">
+      <button class="btn btn-outline-secondary btn-sm" type="button" (click)="getSalaryList()" [disabled]="loading">Refresh</button>
+    </div>
+  </header>
+
+  <form [formGroup]="filterForm" class="filter-card row g-2 align-items-end">
+    <div class="col-12 col-md-4">
+      <label class="form-label small muted mb-1">Staff</label>
+      <input
+        type="text"
+        class="form-control"
+        placeholder="Enter staff name"
+        formControlName="search"
+        list="staffNames"
+        (keyup.enter)="applyFilters()"
+      />
+      <datalist id="staffNames">
+        <option *ngFor="let s of staffList; let i = index" [value]="s?.name || ''"></option>
+      </datalist>
+    </div>
+
+    <div class="col-12 col-md-3">
+      <label class="form-label small muted mb-1">Month</label>
+      <select class="form-select" formControlName="month">
+        <option value="">All Months</option>
+        <option value="1">Jan</option>
+        <option value="2">Feb</option>
+        <option value="3">Mar</option>
+        <option value="4">Apr</option>
+        <option value="5">May</option>
+        <option value="6">Jun</option>
+        <option value="7">Jul</option>
+        <option value="8">Aug</option>
+        <option value="9">Sep</option>
+        <option value="10">Oct</option>
+        <option value="11">Nov</option>
+        <option value="12">Dec</option>
+      </select>
+    </div>
+
+    <div class="col-12 col-md-3">
+      <label class="form-label small muted mb-1">Year</label>
+      <input type="number" class="form-control" formControlName="year" placeholder="Year" />
+    </div>
+
+    <div class="col-12 col-md-2 d-flex gap-2">
+      <button class="btn btn-primary flex-fill" type="button" (click)="applyFilters()" [disabled]="loading">Filter</button>
+      <button class="btn btn-outline-secondary flex-fill" type="button" (click)="resetFilters()" [disabled]="loading">Reset</button>
+    </div>
+  </form>
+
+  <div *ngIf="!loading && errorMsg" class="alert alert-danger py-2">{{ errorMsg }}</div>
+
+
+  <div class="saas-table-wrap" *ngIf="!loading && attendanceList && attendanceList.length > 0">
+    <div class="table-responsive">
+      <table class="table table-hover saas-table">
+        <thead>
+          <tr>
+            <th>Staff (ID)</th>
+            <th>Role</th>
+            <th>Month</th>
+            <th>Year</th>
+            <th>Present</th>
+            <th>Leave</th>
+            <th>Total Salary</th>
+            <th style="width: 140px;">Action</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr *ngFor="let salary of attendanceList; trackBy: trackBySalaryId">
+            <td>{{ salary?.staff_name }} ({{ salary?.staff_enterprise_id }})</td>
+            <td class="text-capitalize">{{ salary?.role }}</td>
+            <td>{{ salary?.month }}</td>
+            <td>{{ salary?.year }}</td>
+            <td>{{ salary?.present_days }}</td>
+            <td>{{ salary?.leave_days }}</td>
+            <td>{{ salary?.total_salary | currency:'INR':'symbol':'1.0-0' }}</td>
+            <td>
+              <!-- <button
+                class="btn btn-sm btn-outline-primary"
+                (click)="printSlip(salary)"
+                type="button"
+              >
+                Print Slip
+              </button> -->
+
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div *ngIf="loading" class="text-center my-3">
+    <div class="spinner-border text-primary"></div>
+  </div>
+
+  <div *ngIf="!loading && (attendanceList?.length || 0) === 0 && !errorMsg" class="muted">
+    No records found
+  </div>
+
+  <nav class="mt-2" *ngIf="totalPages > 1" aria-label="Attendance pagination">
+    <ul class="pagination mb-0">
+      <li class="page-item" [class.disabled]="page === 1">
+        <button class="page-link" (click)="changePage(page - 1)" [disabled]="page === 1">Previous</button>
+      </li>
+
+      <li class="page-item" *ngFor="let p of pages" [class.active]="page === p">
+        <button class="page-link" (click)="changePage(p)">{{ p }}</button>
+      </li>
+
+      <li class="page-item" [class.disabled]="page >= totalPages">
+        <button class="page-link" (click)="changePage(page + 1)" [disabled]="page >= totalPages">Next</button>
+      </li>
+    </ul>
+  </nav>
+</section>

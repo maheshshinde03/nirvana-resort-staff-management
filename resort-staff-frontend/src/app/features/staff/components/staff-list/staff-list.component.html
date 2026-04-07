@@ -1,0 +1,145 @@
+﻿<section class="page-shell">
+  <header class="page-hero">
+    <div class="min-width-0">
+      <div class="text-uppercase small muted" style="letter-spacing: 0.12em;">Directory</div>
+      <h4>Staff Management</h4>
+      <div class="hero-subtitle">Search, filter, and manage employee profiles.</div>
+    </div>
+    <div class="hero-actions">
+      <a class="btn btn-primary btn-sm" routerLink="/staff/add">Add New Staff</a>
+      <button class="btn btn-outline-secondary btn-sm" type="button" (click)="loadStaff()" [disabled]="loading">Refresh</button>
+    </div>
+  </header>
+
+  <div *ngIf="errorMsg" class="alert alert-danger py-2">
+    {{ errorMsg }}
+  </div>
+
+  <form [formGroup]="form" class="filter-card row g-2">
+    <div class="col-12 col-md-3">
+      <input
+        type="text"
+        class="form-control"
+        placeholder="Search name or mobile"
+        formControlName="search"
+      />
+    </div>
+
+    <div class="col-12 col-md-2">
+      <select class="form-select" formControlName="role">
+        <option value="">All Roles</option>
+        <option value="manager">Manager</option>
+        <option value="chef">Chef</option>
+        <option value="waiter">Waiter</option>
+        <option value="maintenance">Maintenance</option>
+        <option value="Other">Other</option>
+      </select>
+    </div>
+
+    <div class="col-12 col-md-2">
+      <select class="form-select" formControlName="category">
+        <option value="">All Category</option>
+        <option value="FULL_TIME">Full Time</option>
+        <option value="PART_TIME">Part Time</option>
+        <option value="CONTRACT">Contract</option>
+      </select>
+    </div>
+
+    <div class="col-12 col-md-2">
+      <select class="form-select" formControlName="status">
+        <option value="">All Status</option>
+        <option value="ACTIVE">Active</option>
+        <option value="INACTIVE">Inactive</option>
+      </select>
+    </div>
+
+    <div class="col-12 col-md-3 d-flex gap-2">
+      <button type="button" class="btn btn-primary flex-fill" (click)="loadStaff()" [disabled]="loading">Search</button>
+      <button type="button" class="btn btn-outline-secondary flex-fill" (click)="resetFilters()" [disabled]="loading">Reset</button>
+    </div>
+  </form>
+
+  <div class="saas-table-wrap">
+    <div class="table-responsive">
+      <table class="table table-hover saas-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Name</th>
+            <th>Mobile</th>
+            <th>Role</th>
+            <th>Category</th>
+            <th>Salary</th>
+            <th>Joining Date</th>
+            <th>Leaving Date</th>
+            <th>Status</th>
+            <th style="width: 140px;">Actions</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr *ngFor="let s of staff; let i = index">
+            <td>{{ (page - 1) * limit + i + 1 }}</td>
+            <td>{{ s.name }}</td>
+            <td>{{ s.mobile }}</td>
+            <td>{{ s.role }}</td>
+            <td>{{ s.category | categoryLabel }}</td>
+            <td>{{ s.salary | number:'1.0-0' }}</td>
+            <td>{{ (s.joining_date || s.joiningDate) | date:'d MMM y' }}</td>
+            <td>
+              {{ (s.leaving_date || s.leavingDate) ? ((s.leaving_date || s.leavingDate) | date:'d MMM y') : '-' }}
+            </td>
+            <td>
+              <span
+                class="badge soft"
+                [ngClass]="{
+                  'bg-success': s.status === 'ACTIVE' || s.status === 'active',
+                  'bg-danger': s.status === 'INACTIVE' || s.status === 'inactive'
+                }"
+              >
+                {{ s.status }}
+              </span>
+            </td>
+            <td>
+              <div class="action-buttons">
+                <a class="btn btn-sm action-edit" [routerLink]="['/staff/edit', s.id]">Edit</a>
+                <button
+                  class="btn btn-sm action-delete"
+                  type="button"
+                  (click)="onDelete(s)"
+                  [disabled]="deletingId === s.id"
+                >
+                  {{ deletingId === s.id ? 'Deleting...' : 'Delete' }}
+                </button>
+              </div>
+            </td>
+          </tr>
+
+          <tr *ngIf="staff.length === 0">
+            <td colspan="10" class="text-center py-4 muted">No data found</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <nav *ngIf="total > limit" aria-label="Staff pagination">
+    <ul class="pagination mb-0">
+      <li class="page-item" [class.disabled]="page === 1">
+        <button class="page-link" (click)="changePage(page - 1)" [disabled]="page === 1">Previous</button>
+      </li>
+
+      <li class="page-item" *ngFor="let p of pages" [class.active]="page === p">
+        <button class="page-link" (click)="changePage(p)">{{ p }}</button>
+      </li>
+
+      <li class="page-item" [class.disabled]="page >= totalPages">
+        <button class="page-link" (click)="changePage(page + 1)" [disabled]="page >= totalPages">Next</button>
+      </li>
+    </ul>
+  </nav>
+
+  <div *ngIf="loading" class="text-center my-3">
+    <div class="spinner-border text-primary"></div>
+  </div>
+</section>

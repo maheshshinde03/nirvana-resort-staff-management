@@ -1,0 +1,10 @@
+resort-staff-backend/node_modules/
+resort-staff-frontend/node_modules/
+resort-staff-backend/.env
+electron
+bundled-backend
+dist-electron
+node_modules
+scripts
+package-lock.json
+package.json

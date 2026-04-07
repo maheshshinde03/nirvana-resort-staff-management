@@ -1,0 +1,105 @@
+﻿<section class="page-shell">
+  <header class="page-hero">
+    <div class="min-width-0">
+      <div class="text-uppercase small muted" style="letter-spacing: 0.12em;">Attendance</div>
+      <h4>Mark Attendance / Leave</h4>
+      <div class="hero-subtitle">Record attendance for a staff member for a specific month and year.</div>
+    </div>
+
+    <div class="hero-actions">
+      <a class="btn btn-outline-secondary btn-sm" routerLink="/attendance">Back to list</a>
+      <button class="btn btn-primary btn-sm" type="button" (click)="onSubmit()" [disabled]="loading">
+        {{ loading ? 'Saving…' : 'Save' }}
+      </button>
+    </div>
+  </header>
+
+  <div class="card surface-card form-card mx-auto">
+    <div class="card-body">
+      <form [formGroup]="attendanceForm" (ngSubmit)="onSubmit()">
+        <div *ngIf="errorMsg" class="alert alert-danger py-2">{{ errorMsg }}</div>
+
+        <div class="row g-3">
+          <div class="col-12 col-md-6">
+            <label class="form-label">Select Staff <span class="text-danger">*</span></label>
+            <select class="form-select" formControlName="staff_id" [class.is-invalid]="attendanceForm.get('staff_id')?.invalid && attendanceForm.get('staff_id')?.touched">
+              <option value="">Select Staff</option>
+              <option *ngFor="let staff of staffList" [value]="staff.id">
+                {{ staff.staff_id }} - {{ staff.name }} ({{ staff.role }})
+              </option>
+            </select>
+            <div class="invalid-feedback" *ngIf="attendanceForm.get('staff_id')?.hasError('required') && attendanceForm.get('staff_id')?.touched">
+              Staff is required
+            </div>
+            <div class="mt-2" *ngIf="selectedStaff">
+              <span class="badge soft bg-primary" style="background: rgba(37, 99, 235, 0.14) !important; border-color: rgba(37, 99, 235, 0.3) !important;">
+                Joining: {{ (selectedStaff.joining_date || selectedStaff.joiningDate) | date:'d MMM y' }}
+              </span>
+            </div>
+          </div>
+
+          <div class="col-12 col-md-3">
+            <label class="form-label">Month <span class="text-danger">*</span></label>
+            <select class="form-select" formControlName="month" [class.is-invalid]="attendanceForm.get('month')?.invalid && attendanceForm.get('month')?.touched">
+              <option value="">Select Month</option>
+              <option value="1" [disabled]="isMonthDisabled(1)">January</option>
+              <option value="2" [disabled]="isMonthDisabled(2)">February</option>
+              <option value="3" [disabled]="isMonthDisabled(3)">March</option>
+              <option value="4" [disabled]="isMonthDisabled(4)">April</option>
+              <option value="5" [disabled]="isMonthDisabled(5)">May</option>
+              <option value="6" [disabled]="isMonthDisabled(6)">June</option>
+              <option value="7" [disabled]="isMonthDisabled(7)">July</option>
+              <option value="8" [disabled]="isMonthDisabled(8)">August</option>
+              <option value="9" [disabled]="isMonthDisabled(9)">September</option>
+              <option value="10" [disabled]="isMonthDisabled(10)">October</option>
+              <option value="11" [disabled]="isMonthDisabled(11)">November</option>
+              <option value="12" [disabled]="isMonthDisabled(12)">December</option>
+            </select>
+            <div class="invalid-feedback" *ngIf="attendanceForm.get('month')?.hasError('required') && attendanceForm.get('month')?.touched">
+              Month is required
+            </div>
+          </div>
+
+          <div class="col-12 col-md-3">
+            <label class="form-label">Year <span class="text-danger">*</span></label>
+            <input type="number" class="form-control" formControlName="year" [min]="minYear || null" [class.is-invalid]="attendanceForm.get('year')?.invalid && attendanceForm.get('year')?.touched" />
+            <div class="invalid-feedback" *ngIf="attendanceForm.get('year')?.hasError('required') && attendanceForm.get('year')?.touched">
+              Year is required
+            </div>
+          </div>
+
+          <div class="col-12 col-md-3">
+            <label class="form-label">Present Days <span class="text-danger">*</span></label>
+            <input type="number" class="form-control" formControlName="present_days" [class.is-invalid]="attendanceForm.get('present_days')?.invalid && attendanceForm.get('present_days')?.touched" />
+            <div class="invalid-feedback" *ngIf="attendanceForm.get('present_days')?.hasError('required') && attendanceForm.get('present_days')?.touched">
+              Present days is required
+            </div>
+            <div class="invalid-feedback" *ngIf="attendanceForm.get('present_days')?.hasError('min') && attendanceForm.get('present_days')?.touched">
+              Present days must be greater than 0
+            </div>
+          </div>
+
+          <div class="col-12 col-md-3">
+            <label class="form-label">Leave Days</label>
+            <input type="number" class="form-control" formControlName="leaves" [class.is-invalid]="attendanceForm.get('leaves')?.invalid && attendanceForm.get('leaves')?.touched" />
+            <div class="invalid-feedback" *ngIf="attendanceForm.get('leaves')?.hasError('min') && attendanceForm.get('leaves')?.touched">
+              Must be at least 0
+            </div>
+          </div>
+
+          <div class="col-12">
+            <label class="form-label">Leave Reason <span style="font-size: 12px; color: var(--app-muted);"><i>(Optional)</i></span></label>
+            <textarea class="form-control" rows="2" formControlName="leave_reason"></textarea>
+          </div>
+
+          <div class="col-12 d-flex gap-2 pt-2">
+            <button class="btn btn-primary" type="submit" [disabled]="loading">
+              {{ loading ? 'Saving…' : 'Save Attendance' }}
+            </button>
+            <button type="button" class="btn btn-outline-secondary" (click)="onClear()" [disabled]="loading">Clear</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</section>

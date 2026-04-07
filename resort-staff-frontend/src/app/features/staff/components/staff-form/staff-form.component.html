@@ -1,0 +1,112 @@
+﻿<section class="page-shell">
+  <header class="page-hero">
+    <div class="min-width-0">
+      <div class="text-uppercase small muted" style="letter-spacing: 0.12em;">Staff</div>
+      <h4>{{ isEditMode ? 'Edit Staff' : 'Add Staff' }}</h4>
+      <div class="hero-subtitle">Create or update employee details, role, and payroll settings.</div>
+    </div>
+
+    <div class="hero-actions">
+      <a class="btn btn-outline-secondary btn-sm" routerLink="/staff">Back to list</a>
+      <button class="btn btn-primary btn-sm" type="button" (click)="onSubmit()" [disabled]="loading">
+        {{ loading ? 'Saving…' : (isEditMode ? 'Save Changes' : 'Create Staff') }}
+      </button>
+    </div>
+  </header>
+
+  <div class="card surface-card form-card mx-auto">
+    <div class="card-body">
+      <form [formGroup]="staffForm" (ngSubmit)="onSubmit()">
+        <div class="row g-3">
+          <div class="col-12 col-md-6">
+            <label class="form-label">Name <span class="text-danger">*</span></label>
+            <input type="text" class="form-control" formControlName="name" />
+            <small class="text-danger" *ngIf="staffForm.get('name')?.touched && staffForm.get('name')?.invalid">
+              Name is required
+            </small>
+          </div>
+
+          <div class="col-12 col-md-6">
+            <label class="form-label">Mobile <span class="text-danger">*</span></label>
+            <input type="text" class="form-control" formControlName="mobile" />
+            <small class="text-danger" *ngIf="staffForm.get('mobile')?.touched && staffForm.get('mobile')?.invalid">
+              Enter valid 10-digit mobile number
+            </small>
+          </div>
+
+          <div class="col-12">
+            <label class="form-label">Address</label>
+            <textarea class="form-control" rows="2" formControlName="address"></textarea>
+          </div>
+
+          <div class="col-12 col-md-6">
+            <label class="form-label">Role <span class="text-danger">*</span></label>
+            <select class="form-select" formControlName="role">
+              <option value="">Select Role</option>
+              <option value="manager">Manager</option>
+              <option value="chef">Chef</option>
+              <option value="waiter">Waiter</option>
+              <option value="maintenance">Maintenance</option>
+              <option value="Other">Other</option>
+            </select>
+            <small class="text-danger" *ngIf="staffForm.get('role')?.touched && staffForm.get('role')?.invalid">
+              Role is required
+            </small>
+          </div>
+
+          <div class="col-12 col-md-6">
+            <label class="form-label">Category <span class="text-danger">*</span></label>
+            <select class="form-select" formControlName="category">
+              <option value="">Select Category</option>
+              <option value="FULL_TIME">Full Time</option>
+              <option value="PART_TIME">Part Time</option>
+              <option value="CONTRACT">Contract</option>
+            </select>
+            <small class="text-danger" *ngIf="staffForm.get('category')?.touched && staffForm.get('category')?.invalid">
+              Category is required
+            </small>
+          </div>
+
+          <div class="col-12 col-md-6">
+            <label class="form-label">Salary <span class="text-danger">*</span></label>
+            <input type="number" class="form-control" formControlName="salary" />
+            <small class="text-danger" *ngIf="staffForm.get('salary')?.touched && staffForm.get('salary')?.invalid">
+              Salary is required
+            </small>
+          </div>
+
+          <div class="col-12 col-md-6">
+            <label class="form-label">Joining Date <span class="text-danger">*</span></label>
+            <input type="date" class="form-control" formControlName="joining_date" />
+            <small class="text-danger" *ngIf="staffForm.get('joining_date')?.touched && staffForm.get('joining_date')?.invalid">
+              Joining date is required
+            </small>
+          </div>
+
+          <div class="col-12 col-md-6">
+            <label class="form-label">Status</label>
+            <select class="form-select" formControlName="status">
+              <option value="ACTIVE">Active</option>
+              <option value="INACTIVE">Inactive</option>
+            </select>
+          </div>
+
+          <div class="col-12 col-md-6" *ngIf="staffForm.get('status')?.value === 'INACTIVE'">
+            <label class="form-label">Leaving Date <span class="text-danger">*</span></label>
+            <input type="date" class="form-control" formControlName="leaving_date" />
+            <small class="text-danger" *ngIf="staffForm.get('leaving_date')?.touched && staffForm.get('leaving_date')?.invalid">
+              Leaving date is required for inactive staff
+            </small>
+          </div>
+
+          <div class="col-12 d-flex gap-2 pt-2">
+            <button class="btn btn-primary" type="submit" [disabled]="loading">
+              {{ loading ? 'Saving…' : 'Submit' }}
+            </button>
+            <button type="button" class="btn btn-outline-secondary" (click)="onClear()" [disabled]="loading">Clear</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</section>
